@@ -1,14 +1,15 @@
 import { StatusBar } from 'expo-status-bar';
-import { FlatList, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
-import React from 'react';
+import { FlatList, StyleSheet, Text, View, TouchableOpacity, Dimensions } from 'react-native';
+import React, { useRef } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useEffect, useState, useMemo } from 'react';
-import Chessboard from 'react-native-chessboard';
+import Chessboard, { ChessboardRef } from 'react-native-chessboard';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { ListItem, SearchBar } from '@rneui/themed';
+import { ListItem, SearchBar, Button } from '@rneui/themed';
 import bg from './assets/bg.jpeg';
 import { ImageBackground, KeyboardAvoidingView, Platform } from 'react-native';
+import { Chess } from 'chess.js';
 
 const Stack = createNativeStackNavigator();
 
@@ -45,22 +46,20 @@ export default function App() {
 
     return (
       <View style={styles.container}>
-        <ImageBackground source={bg} style={{ resizeMode: 'cover', flex: 1 }}>
-          <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
-            <View style={{ flex: 1, backgroundColor: 'rgba(255, 255, 255, 0.7)' }}>
-              <SearchBar platform='android' value={search} onChangeText={setSearch} placeholder='Search...' />
-              <FlatList style={{ flex: 1 }}
-                data={filteredAndSortedGroupNames}
-                keyExtractor={(item) => item}
-                renderItem={({ item }) => (
-                  <TouchableOpacity style={{ height: 60, borderWidth: 0.2, width: '100%', backgroundColor: 'transparent', justifyContent: 'center' }} onPress={() => navigation.navigate('Variations', { groupName: item })}>
-                    <Text style={{ textAlign: 'center', fontSize: 15, fontWeight: '600' }}>{item}</Text>
-                  </TouchableOpacity>
-                )}
-              />
-              <StatusBar style="auto" />
-            </View>
-          </KeyboardAvoidingView>
+        <ImageBackground source={bg} style={styles.bg}>
+          <View style={{ flex: 1, backgroundColor: 'rgba(255, 255, 255, 0.7)' }}>
+            <SearchBar platform='android' value={search} onChangeText={setSearch} placeholder='Search...' />
+            <FlatList style={{ flex: 1 }}
+              data={filteredAndSortedGroupNames}
+              keyExtractor={(item) => item}
+              renderItem={({ item }) => (
+                <TouchableOpacity style={styles.listItem} onPress={() => navigation.navigate('Variations', { groupName: item })}>
+                  <Text style={styles.listMainText}>{item}</Text>
+                </TouchableOpacity>
+              )}
+            />
+            <StatusBar style="auto" />
+          </View>
         </ImageBackground>
       </View>
     );
@@ -83,24 +82,22 @@ export default function App() {
 
     return (
       <View style={styles.container}>
-        <ImageBackground source={bg} style={{ resizeMode: 'cover', flex: 1 }}>
-          <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={{ flex: 1 }}>
-            <View style={{ flex: 1, backgroundColor: 'rgba(255, 255, 255, 0.7)' }}>
-              <Text style={{ textAlign: 'center', fontSize: 30, fontWeight: 'bold', backgroundColor: 'white' }}>{groupName}</Text>
-              <SearchBar platform='android' value={search} onChangeText={setSearch} placeholder='Search...' />
-              <FlatList style={{ flex: 1 }}
-                data={filteredAndSortedOpenings}
-                keyExtractor={(item, index) => item.name + index}
-                renderItem={({ item }) => (
-                  <TouchableOpacity style={{ height: 60, borderWidth: 0.2, width: '100%', backgroundColor: 'transparent', justifyContent: 'center' }} onPress={() => navigation.navigate('Openings', { opening: item })}>
-                    <Text style={{ textAlign: 'center', fontSize: 15, fontWeight: '600' }}>{item.name}</Text>
-                    <Text style={{ textAlign: 'center', fontSize: 10, fontWeight: '400' }}>{item.moves}</Text>
-                  </TouchableOpacity>
-                )}
-              />
-              <StatusBar style="auto" />
-            </View>
-          </KeyboardAvoidingView>
+        <ImageBackground source={bg} style={styles.bg}>
+          <View style={{ flex: 1, backgroundColor: 'rgba(255, 255, 255, 0.7)' }}>
+            <Text style={{ textAlign: 'center', fontSize: 30, fontWeight: 'bold', backgroundColor: 'white' }}>{groupName}</Text>
+            <SearchBar platform='android' value={search} onChangeText={setSearch} placeholder='Search...' />
+            <FlatList style={{ flex: 1 }}
+              data={filteredAndSortedOpenings}
+              keyExtractor={(item, index) => item.name + index}
+              renderItem={({ item }) => (
+                <TouchableOpacity style={styles.listItem} onPress={() => navigation.navigate('Openings', { opening: item })}>
+                  <Text style={styles.listMainText}>{item.name}</Text>
+                  <Text style={styles.listSubText}>{item.moves}</Text>
+                </TouchableOpacity>
+              )}
+            />
+            <StatusBar style="auto" />
+          </View>
         </ImageBackground>
       </View>
     );
@@ -108,15 +105,63 @@ export default function App() {
 
   function ChessScreen({ route, navigation }) {
     const { opening } = route.params;
+    const chessboardRef = useRef(null);
+    const [chess] = useState(new Chess());
+    const moves = opening.moves.replace(/\d+\./g, '').split(' ').filter(move => move);
+    const [currentMove, setCurrentMove] = useState(0);
+
+    useEffect(() => {
+      moves.forEach(move => chess.move(move) && setCurrentMove(moves.length));
+      chessboardRef.current.resetBoard(chess.fen());
+    }, [opening]);
+
+    const handleNextMove = () => {
+      if (currentMove < moves.length) {
+        chess.move(moves[currentMove]);
+        setCurrentMove(currentMove + 1);
+        chessboardRef.current.resetBoard(chess.fen());
+      }
+    };
+
+    const handlePreviousMove = () => {
+      if (currentMove > 0) {
+        setCurrentMove(currentMove - 1);
+        chess.undo();
+        chessboardRef.current.resetBoard(chess.fen());
+      }
+    };
+
+    const handleResetBoard = () => {
+      chess.reset();
+      setCurrentMove(0);
+      chessboardRef.current.resetBoard(chess.fen());
+    };
+
     return (
       <View style={{ ...styles.container, backgroundColor: 'transparent' }}>
-        <ImageBackground source={bg} style={{ flex: 1, resizeMode: "cover" }}>
+        <ImageBackground source={bg} style={styles.bg}>
           <View style={{ flex: 1, backgroundColor: 'rgba(255, 255, 255, 0.7)' }}>
             <Text style={{ textAlign: 'center', fontSize: 30, fontWeight: 'bold', backgroundColor: 'white', borderBottomWidth: 0.5 }}>{opening.name}</Text>
             <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', borderBottomWidth: 0.5 }}>
-              <Chessboard fen={opening.fen} />
+              <Chessboard
+                ref={chessboardRef}
+                onMove={( {state}) => {
+                  const move = chess.load(state.fen);
+                  if (move) {
+                    setCurrentMove(currentMove + 1);
+                  }
+                }
+                }
+              />
             </View>
-            <Text>{opening.moves}</Text>
+            <View style={styles.chessButtons}>
+              <Button title='Previous' onPress={handlePreviousMove} />
+              <Button title='Reset Board' onPress={handleResetBoard} />
+              <Button title='Next' onPress={handleNextMove} />
+            </View>
+            <Text style={styles.listMainText}>{opening.moves}</Text>
+            <Text style={styles.listSubText}>History: {chess.history().join(' ')}</Text>
+            <Text style={styles.listSubText}>Move: {currentMove}</Text>
             <StatusBar style="auto" />
           </View>
         </ImageBackground>
@@ -151,4 +196,34 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
     justifyContent: 'center',
   },
+  bg: {
+    resizeMode: 'cover',
+    flex: 1,
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').height
+  },
+  listItem: {
+    height: 60,
+    borderWidth: 0.2,
+    width: '100%',
+    backgroundColor: 'transparent',
+    justifyContent: 'center'
+  },
+  listMainText: {
+    textAlign: 'center',
+    fontSize: 15,
+    fontWeight: '600'
+  },
+  listSubText: {
+    textAlign: 'center',
+    fontSize: 10,
+    fontWeight: '400'
+  },
+  chessButtons: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    padding: 10,
+  }
+
 });
