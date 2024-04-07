@@ -137,6 +137,13 @@ export default function App() {
       chessboardRef.current.resetBoard(chess.fen());
     };
 
+    const handleMove = (move) => {
+      const lastMove = move.from + move.to;
+      if (chess.move(lastMove)) {
+        setCurrentMove(currentMove + 1);
+      }
+    }
+
     return (
       <View style={{ ...styles.container, backgroundColor: 'transparent' }}>
         <ImageBackground source={bg} style={styles.bg}>
@@ -145,10 +152,9 @@ export default function App() {
             <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', borderBottomWidth: 0.5 }}>
               <Chessboard
                 ref={chessboardRef}
-                onMove={( {state}) => {
-                  const move = chess.load(state.fen);
-                  if (move) {
-                    setCurrentMove(currentMove + 1);
+                onMove={(state) => {
+                  if (state.move) {
+                    handleMove(state.move)
                   }
                 }
                 }
