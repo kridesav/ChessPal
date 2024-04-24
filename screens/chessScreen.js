@@ -1,10 +1,9 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { View, Text, ImageBackground, StatusBar } from 'react-native';
+import { View, StatusBar } from 'react-native';
 import Chessboard from 'react-native-chessboard';
 import { Chess } from 'chess.js';
-import { Button } from '@rneui/themed';
 import styles from '../styles';
-import bg from '../assets/bg.jpeg';
+import { Surface, Text, Button } from 'react-native-paper';
 
 const ChessScreen = ({ route, navigation }) => {
   const { opening } = route.params;
@@ -12,6 +11,10 @@ const ChessScreen = ({ route, navigation }) => {
   const [chess] = useState(new Chess());
   const moves = opening.moves.replace(/\d+\./g, '').split(' ').filter(move => move);
   const [currentMove, setCurrentMove] = useState(0);
+
+  useEffect(() => {
+    navigation.setOptions({ title: opening.name });
+  }, [opening]);
 
   useEffect(() => {
     moves.forEach(move => chess.move(move) && setCurrentMove(moves.length));
@@ -48,33 +51,40 @@ const ChessScreen = ({ route, navigation }) => {
   }
 
   return (
-    <View style={{ ...styles.container, backgroundColor: 'transparent' }}>
-      <ImageBackground source={bg} style={styles.bg}>
-        <View style={{ flex: 1, backgroundColor: 'rgba(255, 255, 255, 0.7)' }}>
-          <Text style={{ textAlign: 'center', fontSize: 30, fontWeight: 'bold', backgroundColor: 'white', borderBottomWidth: 0.5 }}>{opening.name}</Text>
-          <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', borderBottomWidth: 0.5 }}>
-            <Chessboard
-              ref={chessboardRef}
-              onMove={(state) => {
-                if (state.move) {
-                  handleMove(state.move)
-                }
+    <Surface style={{ flex: 1}}>
+      <Surface elevation={2} style={{ flex: 1}}>
+        <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', padding: 10, borderRadius: 10 }}>
+          <Chessboard
+            ref={chessboardRef}
+            onMove={(state) => {
+              if (state.move) {
+                handleMove(state.move)
               }
-              }
-            />
-          </View>
-          <View style={styles.chessButtons}>
-            <Button title='Previous' onPress={handlePreviousMove} />
-            <Button title='Reset Board' onPress={handleResetBoard} />
-            <Button title='Next' onPress={handleNextMove} />
-          </View>
-          <Text style={styles.listMainText}>{opening.moves}</Text>
-          <Text style={styles.listSubText}>History: {chess.history().join(' ')}</Text>
-          <Text style={styles.listSubText}>Move: {currentMove}</Text>
-          <StatusBar style="auto" />
+            }
+            }
+          />
         </View>
-      </ImageBackground>
-    </View>
+        <Surface elevation={2} style={styles.bottomlist2}>
+          <View style={styles.chessButtons}>
+            <Button icon="keyboard-backspace" mode="elevated" onPress={handlePreviousMove}>
+              Previous
+            </Button>
+            <Button icon="undo-variant" mode="elevated" onPress={handleResetBoard}>
+              Reset Board
+            </Button>
+            <Button contentStyle={{ flexDirection: 'row-reverse' }} icon="arrow-right" mode="elevated" onPress={handleNextMove}>
+              Next
+            </Button>
+          </View>
+          <View style={styles.bottomlist2}>
+            <Text style={styles.listMainText}>{opening.moves}</Text>
+            <Text style={styles.listSubText}>History: {chess.history().join(' ')}</Text>
+            <Text style={styles.listSubText}>Move: {currentMove}</Text>
+            <StatusBar style="auto" />
+          </View>
+        </Surface>
+      </Surface>
+    </Surface>
   );
 }
 

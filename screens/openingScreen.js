@@ -1,7 +1,7 @@
 // OpeningScreen.js
-import React, { useState, useMemo } from 'react';
-import { View, Text, ImageBackground, FlatList, StatusBar, TouchableOpacity } from 'react-native';
-import { SearchBar } from '@rneui/themed';
+import React, { useState, useMemo, useEffect } from 'react';
+import { ImageBackground, FlatList, StatusBar} from 'react-native';
+import { Card, Searchbar, Surface, Title, Paragraph } from 'react-native-paper';
 import styles from '../styles';
 import bg from '../assets/bg.jpeg';
 
@@ -9,6 +9,10 @@ const OpeningScreen = ({ route, navigation, chessData }) => {
   const { groupName } = route.params;
   const openings = chessData.filter(opening => opening.name.startsWith(groupName));
   const [search, setSearch] = useState('');
+
+  useEffect(() => {
+    navigation.setOptions({ title: groupName });
+  }, [groupName]);
 
   const filteredAndSortedOpenings = useMemo(() => {
     let result = openings;
@@ -21,25 +25,24 @@ const OpeningScreen = ({ route, navigation, chessData }) => {
   }, [openings, search]);
 
   return (
-    <View style={styles.container}>
-      <ImageBackground source={bg} style={styles.bg}>
-        <View style={{ flex: 1, backgroundColor: 'rgba(255, 255, 255, 0.7)' }}>
-          <Text style={{ textAlign: 'center', fontSize: 30, fontWeight: 'bold', backgroundColor: 'white' }}>{groupName}</Text>
-          <SearchBar platform='android' value={search} onChangeText={setSearch} placeholder='Search...' />
+    <Surface style={styles.container}>
+        <Surface style={{ flex: 1}}>
+          <Searchbar platform='android' value={search} onChangeText={setSearch} placeholder='Search...' />
           <FlatList style={{ flex: 1 }}
             data={filteredAndSortedOpenings}
             keyExtractor={(item, index) => item.name + index}
             renderItem={({ item }) => (
-              <TouchableOpacity style={styles.listItem} onPress={() => navigation.navigate('Openings', { opening: item })}>
-                <Text style={styles.listMainText}>{item.name}</Text>
-                <Text style={styles.listSubText}>{item.moves}</Text>
-              </TouchableOpacity>
+              <Card style={styles.listItem2} onPress={() => navigation.navigate('Openings', { opening: item })}>
+                <Card.Title title={item.name} />
+                <Card.Content>
+                  <Paragraph>{item.moves}</Paragraph>
+                </Card.Content>
+              </Card>
             )}
           />
           <StatusBar style="auto" />
-        </View>
-      </ImageBackground>
-    </View>
+        </Surface>
+    </Surface>
   );
 }
 

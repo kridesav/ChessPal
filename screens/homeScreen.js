@@ -1,11 +1,15 @@
-import React, { useState, useMemo } from 'react';
-import { View, Text, ImageBackground, FlatList, StatusBar, TouchableOpacity } from 'react-native';
-import { SearchBar } from '@rneui/themed';
+import React, { useState, useMemo, useEffect } from 'react';
+import { Text, FlatList, StatusBar } from 'react-native';
+import { Card, Searchbar, Surface } from 'react-native-paper';
 import styles from '../styles';
-import bg from '../assets/bg.jpeg';
+
 
 const HomeScreen = ({ navigation, chessData, isLoading }) => {
     const [search, setSearch] = useState('');
+
+    useEffect(() => {
+      navigation.setOptions({ title: "Learn openings" });
+    }, []);
   
     const groupedOpenings = useMemo(() => {
       if (!chessData) {
@@ -38,25 +42,27 @@ const HomeScreen = ({ navigation, chessData, isLoading }) => {
       return <Text>Loading...</Text>;
     }
 
-  return (
-    <View style={styles.container}>
-      <ImageBackground source={bg} style={styles.bg}>
-        <View style={{ flex: 1, backgroundColor: 'rgba(255, 255, 255, 0.7)' }}>
-          <SearchBar platform='android' value={search} onChangeText={setSearch} placeholder='Search...' />
-          <FlatList style={{ flex: 1 }}
-            data={filteredAndSortedGroupNames}
-            keyExtractor={(item) => item}
-            renderItem={({ item }) => (
-              <TouchableOpacity style={styles.listItem} onPress={() => navigation.navigate('Variations', { groupName: item })}>
-                <Text style={styles.listMainText}>{item}</Text>
-              </TouchableOpacity>
-            )}
-          />
-          <StatusBar style="auto" />
-        </View>
-      </ImageBackground>
-    </View>
-  );
+    return (
+      <Surface style={styles.container}>
+          <Surface style={{ flex: 1}}>
+            <Searchbar
+              value={search}
+              onChangeText={setSearch}
+              placeholder='Search...'
+            />
+            <FlatList style={{ flex: 1 }}
+              data={filteredAndSortedGroupNames}
+              keyExtractor={(item) => item}
+              renderItem={({ item }) => (
+                <Card style={styles.listItem} onPress={() => navigation.navigate('Variations', { groupName: item })}>
+                  <Card.Title title={item} />
+                </Card>
+              )}
+            />
+            <StatusBar style="auto" />
+          </Surface>
+      </Surface>
+    );
 }
 
 export default HomeScreen;

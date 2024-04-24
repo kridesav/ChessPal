@@ -17,8 +17,12 @@ export default StyleSheet.create({
         height: 60,
         borderWidth: 0.2,
         width: '100%',
-        backgroundColor: 'transparent',
         justifyContent: 'center'
+    },
+    listItem2: {
+        borderWidth: 0.2,
+        width: '100%',
+        justifyContent: 'center',
     },
     listMainText: {
         textAlign: 'center',
@@ -35,9 +39,10 @@ export default StyleSheet.create({
         justifyContent: 'space-around',
         alignItems: 'center',
         padding: 10,
+        borderRadius: 10,
+        marginTop: 10,
     },
     menuDiv: {
-        backgroundColor: 'rgba(255, 255, 255, 0.6)',
         marginLeft: '15%',
         padding: 20,
         borderRadius: 10,
@@ -53,6 +58,44 @@ export default StyleSheet.create({
         width: '100%',
         justifyContent: 'center',
         backgroundColor: 'rgba(0, 255, 0, 0.15)'
-    }
+    },
+    container: {
+        flex: 1,
+    },
+    content: {
+        flexGrow: 1,
+        alignItems: "center",
+        padding: 20,
+    },
+    nameSubText: {
+        fontSize: 16,
+        marginLeft: 10,
+    },
+    bottomlist: {
+        width: "100%",
+        marginTop: 30,
+        borderRadius: 10,
+    },
+    input: {
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    switchContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: 10,
+    },
+    button: {
+        justifyContent: "flex-start",
+        padding: 8,
+        marginTop: 10,
+    },
+
+    bottomlist2: {
+        width: "100%",
+        borderRadius: 10,
+        paddingBottom: 20,
+    },
 
 });

@@ -1,22 +1,32 @@
 import React from "react";
-import { View, Text, ImageBackground, FlatList, StatusBar, TouchableOpacity } from "react-native";
+import { View, ImageBackground, FlatList, StatusBar, TouchableOpacity } from "react-native";
+import { Text, Switch, Icon, Surface } from "react-native-paper";
 import styles from "../styles";
-import bg from "../assets/bg.jpeg";
+import { themeContext } from "../components/themeContext";
 
 const SettingsScreen = ({ navigation }) => {
+    const { theme, setTheme, themeMode, setThemeMode } = React.useContext(themeContext);
+
+    const onToggleNightMode = () => setThemeMode(themeMode === 'dark' ? 'light' : 'dark');
+
     return (
-        <View style={styles.container}>
-        <ImageBackground source={bg} style={styles.bg}>
-            <View style={{ flex: 1, backgroundColor: 'rgba(255, 255, 255, 0.7)' }}>
-                <View style={styles.menuDiv}>
-                    <Text style={styles.listMainText}>Settings</Text>
-                    <Text style={styles.listSubText}>Coming soon...</Text>
-                </View>
-            <StatusBar style="auto" />
+        <Surface style={styles.container}>
+            <View style={styles.content}>
+                <Surface elevation={5} style={styles.bottomlist}>
+                    <View style={styles.switchContainer}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                            <Icon source="theme-light-dark" size={24} />
+                            <Text style={styles.nameSubText}>Night Mode</Text>
+                        </View>
+                        <Switch
+                            style={styles.input}
+                            value={themeMode === 'dark'}
+                            onValueChange={onToggleNightMode}
+                        />
+                    </View>
+                </Surface>
             </View>
-        </ImageBackground>
-        </View>
+        </Surface>
     );
 }
-
 export default SettingsScreen;

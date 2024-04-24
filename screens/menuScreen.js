@@ -1,7 +1,8 @@
-import React from "react";
-import { View, Text, ImageBackground, FlatList, StatusBar, TouchableOpacity, BackHandler } from "react-native";
+import React, { useEffect } from "react";
+import { View,ImageBackground,StatusBar, BackHandler } from "react-native";
 import styles from "../styles";
 import bg from "../assets/bg.jpeg";
+import { Surface, Button } from "react-native-paper";
 
 const MenuScreen = ({ navigation }) => {
     const opening = {
@@ -12,29 +13,31 @@ const MenuScreen = ({ navigation }) => {
         BackHandler.exitApp();
     };
 
+    useEffect(() => {
+        navigation.setOptions({ headerShown: false });
+      }, []);
+
     return (
         <View style={styles.container}>
         <ImageBackground source={bg} style={styles.bg}>
-            <View style={{ flex: 1, backgroundColor: 'rgba(255, 255, 255, 0.7)' }}>
-                <View style={styles.menuDiv}>
-                        <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Openings', {opening})}>
-                            <Text style={styles.listMainText}>New game</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('ChessPal')}>
-                            <Text style={styles.listMainText}>Learn openings</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Info')}>
-                            <Text style={styles.listMainText}>Info</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.menuItem} onPress={() => navigation.navigate('Settings')}>
-                            <Text style={styles.listMainText}>Settings</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity style={styles.menuItem} onPress={handleExit}>
-                            <Text style={styles.listMainText}>Exit</Text>
-                        </TouchableOpacity>
-                </View>
+                <Surface elevation={4} style={styles.menuDiv}>
+                    <Button icon="chess-queen" style={styles.button} mode="elevated" onPress={() => navigation.navigate('Openings', {opening})}>
+                    New game
+                    </Button>
+                    <Button icon="book-open-outline" style={styles.button} mode="elevated" onPress={() => navigation.navigate('ChessPal')}>
+                    Learn openings
+                    </Button>
+                    <Button icon="information-outline" style={styles.button} mode="elevated" onPress={() => navigation.navigate('Info')}>
+                    Info
+                    </Button>
+                    <Button icon="cog-outline" style={styles.button} mode="elevated" onPress={() => navigation.navigate('Settings')}>
+                    Settings
+                    </Button>
+                    <Button icon="exit-to-app" style={styles.button} mode="elevated" onPress={handleExit}>
+                    Exit
+                    </Button>
+                </Surface>
             <StatusBar style="auto" />
-            </View>
         </ImageBackground>
         </View>
     );
