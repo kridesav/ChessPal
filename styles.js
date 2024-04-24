@@ -15,12 +15,12 @@ export default StyleSheet.create({
     },
     listItem: {
         height: 60,
-        borderWidth: 0.2,
+        marginTop: 5,
         width: '100%',
         justifyContent: 'center'
     },
     listItem2: {
-        borderWidth: 0.2,
+        marginTop: 5,
         width: '100%',
         justifyContent: 'center',
     },
