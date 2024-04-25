@@ -7,9 +7,9 @@ ChessPal is a mobile application built with React Native. It provides a platform
 Here are some screenshots of the app:
 
 <p float="left">
-  <img src="images/main.png" width="300" />
-  <img src="images/new.png" width="300" /> 
-  <img src="images/search.png" width="300" />
+  <img src="images/main.png" width="250" />
+  <img src="images/new.png" width="250" /> 
+  <img src="images/search.png" width="250" />
 </p>
 
 ## Installation 
