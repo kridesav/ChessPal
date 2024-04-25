@@ -49,21 +49,23 @@ Chesspal has very user-friendly interface and it is easy to approach.
 
 ## Dependencies
 
-- [@react-navigation/native](https://www.npmjs.com/package/@react-navigation/native): ^6.1.17
+Opening data from here: [Github](https://github.com/hayatbiralem/eco.json)
+
+### Navigation
+
 - [@react-navigation/native-stack](https://www.npmjs.com/package/@react-navigation/native-stack): ^6.9.26
-- [@rneui/base](https://www.npmjs.com/package/@rneui/base): ^4.0.0-rc.7
-- [@rneui/themed](https://www.npmjs.com/package/@rneui/themed): ^4.0.0-rc.8
+
+### Chess board state
+
 - [chess.js](https://www.npmjs.com/package/chess.js): ^1.0.0-beta.8
-- [expo](https://www.npmjs.com/package/expo): ~50.0.14
-- [expo-status-bar](https://www.npmjs.com/package/expo-status-bar): ~1.11.1
-- [react](https://www.npmjs.com/package/react): 18.2.0
-- [react-native](https://www.npmjs.com/package/react-native): 0.73.6
+
+### Chess board
+
 - [react-native-chessboard](https://www.npmjs.com/package/react-native-chessboard): ^0.1.2
-- [react-native-gesture-handler](https://www.npmjs.com/package/react-native-gesture-handler): ~2.14.0
+
+### UI elements
+
 - [react-native-paper](https://www.npmjs.com/package/react-native-paper): ^5.12.3
-- [react-native-reanimated](https://www.npmjs.com/package/react-native-reanimated): ~3.6.2
-- [react-native-safe-area-context](https://www.npmjs.com/package/react-native-safe-area-context): ^4.8.2
-- [react-native-screens](https://www.npmjs.com/package/react-native-screens): ~3.29.0
 
 ## Author
 
