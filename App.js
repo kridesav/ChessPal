@@ -10,6 +10,7 @@ import InfoScreen from './screens/infoScreen';
 import SettingsScreen from './screens/settingsScreen';
 import { PaperProvider } from 'react-native-paper';
 import { themeContext } from './components/themeContext';
+import { depthContext } from './components/depthContext';
 import { darkTheme, lightTheme } from './components/theme';
 
 
@@ -20,6 +21,7 @@ export default function App() {
   const [isLoading, setIsLoading] = useState(true);
   const [themeMode, setThemeMode] = useState('dark');
   const [theme, setTheme] = useState(themeMode === 'dark' ? darkTheme : lightTheme);
+  const [depth, setDepth] = useState(5);
 
   useEffect(() => {
     setChessData(require('./eco.json'));
@@ -30,32 +32,34 @@ export default function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <themeContext.Provider value={{ theme, setTheme, themeMode, setThemeMode }}>
-        <PaperProvider theme={theme}>
-          <NavigationContainer>
-            <Stack.Navigator
-              screenOptions={{
-                headerStyle: {
-                  backgroundColor: theme.colors.background,
-                },
-                headerTintColor: theme.colors.onBackground,
-                headerTitleStyle: {
-                  fontWeight: 'normal',
-                },
-              }}
-            >
-              <Stack.Screen name="Menu" component={MenuScreen} />
-              <Stack.Screen name="ChessPal">
-                {props => <HomeScreen {...props} chessData={chessData} isLoading={isLoading} />}
-              </Stack.Screen>
-              <Stack.Screen name="Variations">
-                {props => <OpeningScreen {...props} chessData={chessData} />}
-              </Stack.Screen>
-              <Stack.Screen name="Openings" component={ChessScreen} />
-              <Stack.Screen name="Info" component={InfoScreen} />
-              <Stack.Screen name="Settings" component={SettingsScreen} />
-            </Stack.Navigator>
-          </NavigationContainer>
-        </PaperProvider>
+        <depthContext.Provider value={{ depth, setDepth }}>
+          <PaperProvider theme={theme}>
+            <NavigationContainer>
+              <Stack.Navigator
+                screenOptions={{
+                  headerStyle: {
+                    backgroundColor: theme.colors.background,
+                  },
+                  headerTintColor: theme.colors.onBackground,
+                  headerTitleStyle: {
+                    fontWeight: 'normal',
+                  },
+                }}
+              >
+                <Stack.Screen name="Menu" component={MenuScreen} />
+                <Stack.Screen name="ChessPal">
+                  {props => <HomeScreen {...props} chessData={chessData} isLoading={isLoading} />}
+                </Stack.Screen>
+                <Stack.Screen name="Variations">
+                  {props => <OpeningScreen {...props} chessData={chessData} />}
+                </Stack.Screen>
+                <Stack.Screen name="Openings" component={ChessScreen} />
+                <Stack.Screen name="Info" component={InfoScreen} />
+                <Stack.Screen name="Settings" component={SettingsScreen} />
+              </Stack.Navigator>
+            </NavigationContainer>
+          </PaperProvider>
+        </depthContext.Provider>
       </themeContext.Provider>
     </GestureHandlerRootView>
   );

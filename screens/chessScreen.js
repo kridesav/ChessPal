@@ -3,7 +3,10 @@ import { View, StatusBar } from 'react-native';
 import Chessboard from 'react-native-chessboard';
 import { Chess } from 'chess.js';
 import styles from '../styles';
-import { Surface, Text, Button } from 'react-native-paper';
+import { Surface, Text, Button, ProgressBar } from 'react-native-paper';
+import { fetchEval } from '../components/fetchEval';
+import { useContext } from 'react';
+import { depthContext } from '../components/depthContext';
 
 const ChessScreen = ({ route, navigation }) => {
   const { opening } = route.params;
@@ -11,6 +14,9 @@ const ChessScreen = ({ route, navigation }) => {
   const [chess] = useState(new Chess());
   const moves = opening.moves.replace(/\d+\./g, '').split(' ').filter(move => move);
   const [currentMove, setCurrentMove] = useState(0);
+  const [evalData, setEvalData] = useState(null);
+  const { depth } = useContext(depthContext);
+  const [showBestMove, setShowBestMove] = useState(false);
 
   useEffect(() => {
     navigation.setOptions({ title: opening.name });
@@ -21,6 +27,10 @@ const ChessScreen = ({ route, navigation }) => {
     chessboardRef.current.resetBoard(chess.fen());
   }, [opening]);
 
+  useEffect(() => {
+    fetchEvalData();
+  }, [chess.fen()]);
+
   const handleNextMove = () => {
     if (currentMove < moves.length) {
       chess.move(moves[currentMove]);
@@ -28,6 +38,29 @@ const ChessScreen = ({ route, navigation }) => {
       chessboardRef.current.resetBoard(chess.fen());
     }
   };
+
+  const fetchEvalData = async () => {
+    const data = await fetchEval(chess.fen(), depth);
+    setEvalData(data);
+  };
+
+  const highlightBestMove = () => {
+    if (chessboardRef.current) chessboardRef.current.resetAllHighlightedSquares();
+
+    if (evalData && showBestMove) {
+      const bestMove = evalData.bestmove.split(' ')[1];
+      const fromSquare = bestMove.substring(0, 2);
+      const toSquare = bestMove.substring(2, 4);
+      if (chessboardRef.current) {
+        chessboardRef.current.highlight({ square: fromSquare, color: 'lightgreen' });
+        chessboardRef.current.highlight({ square: toSquare, color: 'green' });
+      }
+    }
+  };
+  
+  useEffect(() => {
+    highlightBestMove();
+  }, [evalData, showBestMove]);
 
   const handlePreviousMove = () => {
     if (currentMove > 0) {
@@ -51,9 +84,10 @@ const ChessScreen = ({ route, navigation }) => {
   }
 
   return (
-    <Surface style={{ flex: 1}}>
-      <Surface elevation={2} style={{ flex: 1}}>
-        <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', padding: 10, borderRadius: 10 }}>
+    <Surface style={{ flex: 1 }}>
+      <Surface elevation={2} style={{ flex: 1 }}>
+        <ProgressBar style={{ height: 15, borderColor: 'black', borderWidth: 0.2 }} progress={(evalData?.evaluation ?? 0) / 20 + 0.5} color={'white'} />
+        <View style={{ flexDirection: 'row', justifyContent: 'center', alignItems: 'center', padding: 5, borderRadius: 10 }}>
           <Chessboard
             ref={chessboardRef}
             onMove={(state) => {
@@ -66,13 +100,16 @@ const ChessScreen = ({ route, navigation }) => {
         </View>
         <Surface elevation={2} style={styles.bottomlist2}>
           <View style={styles.chessButtons}>
-            <Button icon="keyboard-backspace" mode="elevated" onPress={handlePreviousMove}>
+            <Button icon="arrow-left" mode="elevated" compact onPress={handlePreviousMove}>
               Previous
             </Button>
-            <Button icon="undo-variant" mode="elevated" onPress={handleResetBoard}>
-              Reset Board
+            <Button icon="undo-variant" mode="elevated" compact onPress={handleResetBoard}>
+              Reset
             </Button>
-            <Button contentStyle={{ flexDirection: 'row-reverse' }} icon="arrow-right" mode="elevated" onPress={handleNextMove}>
+            <Button icon="chess-queen" mode="elevated" compact onPress={() => setShowBestMove(!showBestMove)}>
+              {showBestMove ? 'Hide best' : 'Show best'}
+            </Button>
+            <Button contentStyle={{ flexDirection: 'row-reverse' }} icon="arrow-right" mode="elevated" compact onPress={handleNextMove}>
               Next
             </Button>
           </View>
@@ -82,6 +119,12 @@ const ChessScreen = ({ route, navigation }) => {
             <Text style={styles.listSubText}>Move: {currentMove}</Text>
             <StatusBar style="auto" />
           </View>
+        </Surface>
+        <Surface elevation={3} style={styles.bottomlist3}>
+          <Text style={styles.listMainText}>Evaluation</Text>
+          <Text style={styles.listSubText}>Depth: {depth}</Text>
+          <Text style={styles.listSubText}>{evalData?.bestmove}</Text>
+          <Text style={styles.listSubText}>Continuation: {evalData?.continuation}</Text>
         </Surface>
       </Surface>
     </Surface>

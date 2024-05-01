@@ -97,5 +97,12 @@ export default StyleSheet.create({
         borderRadius: 10,
         paddingBottom: 20,
     },
+    bottomlist3: {
+        width: "100%",
+        borderRadius: 10,
+        paddingBottom: 10,
+        marginTop: 10,
+        paddingTop: 10,
+    },
 
 });
