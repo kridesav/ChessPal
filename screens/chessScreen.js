@@ -3,10 +3,12 @@ import { View, StatusBar } from 'react-native';
 import Chessboard from 'react-native-chessboard';
 import { Chess } from 'chess.js';
 import styles from '../styles';
-import { Surface, Text, Button, ProgressBar } from 'react-native-paper';
+import { Surface, Text, Button, ProgressBar, Chip, List } from 'react-native-paper';
 import { fetchEval } from '../components/fetchEval';
 import { useContext } from 'react';
 import { depthContext } from '../components/depthContext';
+import { ScrollView } from 'react-native-gesture-handler';
+
 
 const ChessScreen = ({ route, navigation }) => {
   const { opening } = route.params;
@@ -57,7 +59,7 @@ const ChessScreen = ({ route, navigation }) => {
       }
     }
   };
-  
+
   useEffect(() => {
     highlightBestMove();
   }, [evalData, showBestMove]);
@@ -84,6 +86,7 @@ const ChessScreen = ({ route, navigation }) => {
   }
 
   return (
+
     <Surface style={{ flex: 1 }}>
       <Surface elevation={2} style={{ flex: 1 }}>
         <ProgressBar style={{ height: 15, borderColor: 'black', borderWidth: 0.2 }} progress={(evalData?.evaluation ?? 0) / 20 + 0.5} color={'white'} />
@@ -98,34 +101,45 @@ const ChessScreen = ({ route, navigation }) => {
             }
           />
         </View>
-        <Surface elevation={2} style={styles.bottomlist2}>
-          <View style={styles.chessButtons}>
-            <Button icon="arrow-left" mode="elevated" compact onPress={handlePreviousMove}>
-              Previous
-            </Button>
-            <Button icon="undo-variant" mode="elevated" compact onPress={handleResetBoard}>
-              Reset
-            </Button>
-            <Button icon="chess-queen" mode="elevated" compact onPress={() => setShowBestMove(!showBestMove)}>
-              {showBestMove ? 'Hide best' : 'Show best'}
-            </Button>
-            <Button contentStyle={{ flexDirection: 'row-reverse' }} icon="arrow-right" mode="elevated" compact onPress={handleNextMove}>
-              Next
-            </Button>
-          </View>
-          <View style={styles.bottomlist2}>
-            <Text style={styles.listMainText}>{opening.moves}</Text>
-            <Text style={styles.listSubText}>History: {chess.history().join(' ')}</Text>
-            <Text style={styles.listSubText}>Move: {currentMove}</Text>
+        <ScrollView>
+          <Surface elevation={2} style={styles.bottomlist2}>
+            <View style={styles.chessButtons}>
+              <Button icon="arrow-left" mode="elevated" compact onPress={handlePreviousMove}>
+                Previous
+              </Button>
+              <Button icon="undo-variant" mode="elevated" compact onPress={handleResetBoard}>
+                Reset
+              </Button>
+              <Button icon="chess-queen" mode="elevated" compact onPress={() => setShowBestMove(!showBestMove)}>
+                {showBestMove ? 'Hide best' : 'Show best'}
+              </Button>
+              <Button contentStyle={{ flexDirection: 'row-reverse' }} icon="arrow-right" mode="elevated" compact onPress={handleNextMove}>
+                Next
+              </Button>
+            </View>
+
+            <View style={styles.bottomlist2}>
+              <Text style={styles.listMainText}>{opening.moves}</Text>
+              <Text style={styles.listMainText}>Moves: {currentMove}</Text>
+              <View style={{marginTop: 10}}>
+              <List.Accordion style={{height: 55}} left={props => <List.Icon {...props} icon="format-list-bulleted" />} title="Show history">
+                <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
+                {chess.history().map((move, index) => (
+                  <Button key={index} compact style={styles.chip2}>{move}</Button>
+                ))}
+                </View>
+              </List.Accordion>
+              </View>
+            </View>
             <StatusBar style="auto" />
-          </View>
-        </Surface>
-        <Surface elevation={3} style={styles.bottomlist3}>
-          <Text style={styles.listMainText}>Evaluation</Text>
-          <Text style={styles.listSubText}>Depth: {depth}</Text>
-          <Text style={styles.listSubText}>{evalData?.bestmove}</Text>
-          <Text style={styles.listSubText}>Continuation: {evalData?.continuation}</Text>
-        </Surface>
+          </Surface>
+          <Surface elevation={2} style={styles.bottomlist3}>
+            <Text style={styles.listMainText}>Evaluation</Text>
+            <Text style={styles.listSubText}>Depth: {depth}</Text>
+            <Chip mode='outlined' icon='lightbulb-on-outline' style={styles.chip}>{evalData?.bestmove}</Chip>
+            <Chip mode='outlined' icon='format-list-numbered' style={styles.chip}>Continuation: {evalData?.continuation}</Chip>
+          </Surface>
+        </ScrollView>
       </Surface>
     </Surface>
   );

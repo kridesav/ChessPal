@@ -1,14 +1,16 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Text, FlatList, StatusBar } from 'react-native';
-import { Card, Searchbar, Surface } from 'react-native-paper';
+import { FlatList, StatusBar } from 'react-native';
+import { Card, Searchbar, Surface, Text, useTheme } from 'react-native-paper';
 import styles from '../styles';
 
 
 const HomeScreen = ({ navigation, chessData, isLoading }) => {
     const [search, setSearch] = useState('');
+    const theme = useTheme();
+    const [itemsToShow, setItemsToShow] = useState(15);
 
     useEffect(() => {
-      navigation.setOptions({ title: "Learn openings" });
+      navigation.setOptions({ title: "Main line theory" });
     }, []);
   
     const groupedOpenings = useMemo(() => {
@@ -51,11 +53,13 @@ const HomeScreen = ({ navigation, chessData, isLoading }) => {
               placeholder='Search...'
             />
             <FlatList style={{ flex: 1 }}
-              data={filteredAndSortedGroupNames}
+              data={filteredAndSortedGroupNames.slice(0, itemsToShow)}
+              onEndReached={() => setItemsToShow(itemsToShow + 15)}
+              onEndReachedThreshold={0.5}
               keyExtractor={(item) => item}
-              renderItem={({ item }) => (
-                <Card style={styles.listItem} onPress={() => navigation.navigate('Variations', { groupName: item })}>
-                  <Card.Title title={item} />
+              renderItem={({ item, index }) => (
+                <Card style={[styles.listItem, {backgroundColor: index % 2 === 0 ? theme.colors.elevation.level2 : theme.colors.elevation.level5}]} onPress={() => navigation.navigate('Variations', { groupName: item })}>
+                  <Card.Title title={item} subtitle={`${groupedOpenings[item].length} variations`} />
                 </Card>
               )}
             />

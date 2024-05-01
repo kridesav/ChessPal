@@ -14,12 +14,13 @@ export default StyleSheet.create({
         height: Dimensions.get('window').height
     },
     listItem: {
-        height: 60,
+        height: 90,
         marginTop: 5,
         width: '100%',
         justifyContent: 'center'
     },
     listItem2: {
+        minHeight: 100,
         marginTop: 5,
         width: '100%',
         justifyContent: 'center',
@@ -95,7 +96,7 @@ export default StyleSheet.create({
     bottomlist2: {
         width: "100%",
         borderRadius: 10,
-        paddingBottom: 20,
+        paddingBottom: 10,
     },
     bottomlist3: {
         width: "100%",
@@ -104,5 +105,22 @@ export default StyleSheet.create({
         marginTop: 10,
         paddingTop: 10,
     },
+    chip: {
+        margin: 2,
+        borderRadius: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    chip2: {
+        margin: 2,
+        borderRadius: 10,
+        
+    },
+    chipContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        borderRadius: 10,
+    },
+    
 
 });
